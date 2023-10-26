@@ -1,5 +1,6 @@
 import VideoProcessor from "./videoProcessor.js"
 import MP4Demuxer from "./mp4Demuxer.js"
+import CanvasRender from "./canvasRender.js"
 
 const qvgaConst = {
     width: 320,
@@ -16,7 +17,7 @@ const hdConst = {
     height: 720
 }
 
-const encodeConfig = {
+const encoderConfig = {
     ...qvgaConst,
     bitrate: 10e6,
 
@@ -38,10 +39,11 @@ const videoProcessor = new VideoProcessor({
 })
 
 onmessage = async ({ data }) => {
-    console.log('aqui')
+    const renderFrame = CanvasRender.getRenderer(data.canvas)
     await videoProcessor.start({
         file: data.file,
-        encoderConfig: encodeConfig,
+        renderFrame,
+        encoderConfig,
         sendMessage(message){
             self.postMessage(message)
         }

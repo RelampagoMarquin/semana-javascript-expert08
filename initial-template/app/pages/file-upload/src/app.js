@@ -17,9 +17,13 @@ worker.onerror = (error) => {
 }
 
 view.configureOnFileChange(file => {
+    const canvas = view.getCanvas()
     worker.postMessage({
-        file
-    })
+        file,
+        canvas
+    }, [ 
+        canvas
+    ])
     clock.start((time) => {
         took = time;
         view.updateElapsedTime(`Process started ${time}`)
