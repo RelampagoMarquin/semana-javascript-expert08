@@ -1,6 +1,8 @@
 import VideoProcessor from "./videoProcessor.js"
 import MP4Demuxer from "./mp4Demuxer.js"
 import CanvasRender from "./canvasRender.js"
+import WebWriter from "../deps/webm-writer2.js"
+import Service from "./service.js"
 
 const qvgaConst = {
     width: 320,
@@ -33,9 +35,21 @@ const encoderConfig = {
     // avc: { format: 'annexb' }
 }
 
+const webWriterConfig = {
+    codec: 'VP9',
+    width: encoderConfig.width,
+    height: encoderConfig.height,
+    bitrate: encoderConfig.bitrate,
+}
+
 const mp4Demuxer = new MP4Demuxer()
+const service = new Service({
+    url: 'http://localhost:3000'
+})
 const videoProcessor = new VideoProcessor({
-    mp4Demuxer
+    mp4Demuxer,
+    webWriter: new WebWriter(webWriterConfig),
+    service
 })
 
 onmessage = async ({ data }) => {
@@ -44,12 +58,12 @@ onmessage = async ({ data }) => {
         file: data.file,
         renderFrame,
         encoderConfig,
-        sendMessage(message){
+        sendMessage: (message) =>  {
             self.postMessage(message)
         }
     })
 
-    self.postMessage({
-        status: 'done'
-    })
+    // self.postMessage({
+    //     status: 'done'
+    // })
 } 
